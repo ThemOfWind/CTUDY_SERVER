@@ -80,6 +80,10 @@ WSGI_APPLICATION = 'ctudy_server.wsgi.application'
 CORS_ORIGIN_ALLOW_ALL = True
 ACCESS_CONTROL_EXPOSE_HEADERS = ['Content-Disposition']
 
+REST_FRAMEWORK = {
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+}
+
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
