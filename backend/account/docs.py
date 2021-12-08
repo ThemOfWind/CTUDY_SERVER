@@ -159,3 +159,20 @@ class SignUpDoc:
             'phone': request_phone_field
         }
     )
+
+
+class LogoutDoc:
+    # Response
+    result_field = openapi.Schema(
+        'result',
+        description='처리 결과',
+        type=openapi.TYPE_BOOLEAN
+    )
+    post_success_resp = openapi.Schema(
+        'response',
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'result': result_field,
+            'response': None
+        }
+    )

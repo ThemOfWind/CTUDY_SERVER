@@ -42,6 +42,9 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('docs/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
+    # oAuth2.0 url
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+
     # api url
     path('api/v1/account/', include('account.urls')),
 ]

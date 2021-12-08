@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import datetime
 import os
 from pathlib import Path
 
@@ -37,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'oauth2_provider',
     'rest_framework',
-    'knox',
     'corsheaders',
     'drf_yasg',
     'account',
@@ -81,7 +82,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 ACCESS_CONTROL_EXPOSE_HEADERS = ['Content-Disposition']
 
 REST_FRAMEWORK = {
-    'TEST_REQUEST_DEFAULT_FORMAT': 'json'
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'ctudy_server.pagination.CustomPagination',
+    'PAGE_SIZE': 10
 }
 
 
@@ -180,3 +186,6 @@ LOGGING = {
         }
     }
 }
+
+TOKEN_URL = 'http://localhost:8000/o/token/'
+APP_NAME = 'ctudy'

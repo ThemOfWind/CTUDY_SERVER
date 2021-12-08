@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from oauth2_provider.models import Application
 from rest_framework import status
 from rest_framework.test import APITestCase
 from account.models import Member
@@ -26,6 +27,9 @@ from account.models import Member
 class AccountTests(APITestCase):
     @classmethod
     def setUpTestData(cls):
+        # Application.objects.create(client_type='Confidential',
+        #                            authorization_grant_type='Resource owner password-based',
+        #                            name='ctudy')
         user = User.objects.create_user(username='test', password='test1234!')
         Member.objects.create(name='test', user=user)
 
