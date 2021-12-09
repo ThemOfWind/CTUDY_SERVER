@@ -153,10 +153,6 @@ class SignUpDoc:
             'username': request_username_field,
             'password': request_password_field,
             'name': request_name_field,
-            'doctor_code': request_doctor_code_field,
-            'birthday': request_birthday_field,
-            'gender': request_gender_field,
-            'phone': request_phone_field
         }
     )
 
