@@ -22,11 +22,11 @@ from rest_framework import permissions
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="NIPA API",
+        title="Ctudy API",
         default_version='v1',
-        description="NIPA Backend RESTful API",
+        description="Ctudy Backend RESTful API",
     ),
-    url='http://192.168.2.139:8000',
+    url='https://api.ctudy.com',
     validators=['flex'],
     public=True,
     permission_classes=(permissions.AllowAny,),
