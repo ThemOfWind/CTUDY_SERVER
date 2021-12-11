@@ -10,8 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import datetime
+import json
 import os
 from pathlib import Path
+
+
+ENV = os.environ.get('DB_PORT', 'DEV')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,6 +83,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ctudy_server.wsgi.application'
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 ACCESS_CONTROL_EXPOSE_HEADERS = ['Content-Disposition']
 
 REST_FRAMEWORK = {
@@ -94,12 +99,37 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if ENV == 'DEV':
+    # secret file
+    with open('./ctudy_server/secret.json', 'r', encoding='utf-8') as f:
+        secret = json.load(f)
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+        # 'default': {
+        #     'ENGINE': 'django.db.backends.mysql',
+        #     'NAME': secret['DB']['NAME'],
+        #     'HOST': secret['DB']['HOST'],
+        #     'PORT': secret['DB']['PORT'],
+        #     'USER': secret['DB']['USER'],
+        #     'PASSWORD': secret['DB']['PASSWORD'],
+        # }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['DB_NAME'],
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ['DB_PORT'],
+            'USER': os.environ['DB_USER'],
+            'PASSWORD': os.environ['DB_PASSWORD'],
+        }
+    }
 
 
 # Password validation
