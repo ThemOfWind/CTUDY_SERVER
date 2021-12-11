@@ -56,9 +56,11 @@ class SignInView(APIView):
 
             app_objects = Application.objects.filter(name=settings.APP_NAME)
             if not app_objects.exists():
-                return Response(status=status.HTTP_401_UNAUTHORIZED, data=auth_error_return)
-
-            app = app_objects[0]
+                app = Application.objects.create(authorization_grant_type='password',
+                                                 client_type='confidential',
+                                                 name=settings.APP_NAME)
+            else:
+                app = app_objects[0]
 
             url_data = {
                 'client_id': app.client_id,

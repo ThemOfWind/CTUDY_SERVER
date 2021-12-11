@@ -14,12 +14,10 @@ import json
 import os
 from pathlib import Path
 
-
 ENV = os.environ.get('DB_PORT', 'DEV')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -31,7 +29,6 @@ SECRET_KEY = 'django-insecure-m&=f82t@_w+w0z2(8(lc1=3)om6^3=8f3kf_qqljto@acbp=ra
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -95,6 +92,15 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
@@ -131,7 +137,6 @@ else:
         }
     }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -150,7 +155,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -164,7 +168,6 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -173,7 +176,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
