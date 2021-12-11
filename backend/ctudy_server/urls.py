@@ -47,4 +47,5 @@ urlpatterns = [
 
     # api url
     path('api/v1/account/', include('account.urls')),
+    path('api/v1/study/', include('room.urls')),
 ]

@@ -125,26 +125,6 @@ class SignUpDoc:
         description='name',
         type=openapi.TYPE_STRING
     )
-    request_doctor_code_field = openapi.Schema(
-        'doctor_code',
-        description='doctor_code',
-        type=openapi.TYPE_STRING
-    )
-    request_birthday_field = openapi.Schema(
-        'birthday',
-        description='birthday',
-        type=openapi.TYPE_STRING
-    )
-    request_gender_field = openapi.Schema(
-        'gender',
-        description='gender',
-        type=openapi.TYPE_STRING
-    )
-    request_phone_field = openapi.Schema(
-        'phone',
-        description='phone',
-        type=openapi.TYPE_STRING
-    )
     post_data_type = openapi.Schema(
         'data',
         description='POST Data Body',
