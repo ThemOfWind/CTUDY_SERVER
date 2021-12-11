@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-import datetime
 import json
 import os
 from pathlib import Path
@@ -111,10 +110,10 @@ if ENV == 'DEV':
         secret = json.load(f)
 
     DATABASES = {
-        #'default': {
+        # 'default': {
         #    'ENGINE': 'django.db.backends.sqlite3',
         #    'NAME': BASE_DIR / 'db.sqlite3',
-        #}
+        # }
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': secret['DB']['NAME'],
