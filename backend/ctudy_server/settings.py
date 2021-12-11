@@ -111,18 +111,18 @@ if ENV == 'DEV':
         secret = json.load(f)
 
     DATABASES = {
+        #'default': {
+        #    'ENGINE': 'django.db.backends.sqlite3',
+        #    'NAME': BASE_DIR / 'db.sqlite3',
+        #}
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': secret['DB']['NAME'],
+            'HOST': secret['DB']['HOST'],
+            'PORT': secret['DB']['PORT'],
+            'USER': secret['DB']['USER'],
+            'PASSWORD': secret['DB']['PASSWORD'],
         }
-        # 'default': {
-        #     'ENGINE': 'django.db.backends.mysql',
-        #     'NAME': secret['DB']['NAME'],
-        #     'HOST': secret['DB']['HOST'],
-        #     'PORT': secret['DB']['PORT'],
-        #     'USER': secret['DB']['USER'],
-        #     'PASSWORD': secret['DB']['PASSWORD'],
-        # }
     }
 
 else:
