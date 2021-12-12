@@ -149,7 +149,8 @@ class SignUpView(APIView):
             return_data = {
                 'result': True,
                 'response': {
-                    'username': username
+                    'username': username,
+                    'name': name
                 }
             }
 

@@ -82,11 +82,17 @@ class SignUpDoc:
         description='username (email)',
         type=openapi.TYPE_STRING
     )
+    name_field = openapi.Schema(
+        'name',
+        description='이름',
+        type=openapi.TYPE_STRING
+    )
     response_resp = openapi.Schema(
         'response',
         type=openapi.TYPE_OBJECT,
         properties={
-            'username': username_field
+            'username': username_field,
+            'name': name_field
         }
     )
     result_field = openapi.Schema(
