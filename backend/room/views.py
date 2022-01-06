@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from account.models import Member
 from room.docs import RoomDoc
 from room.models import Room, RoomConfig
-from room.serializers import RoomSerializer, ListRoomSerializer, RoomConfigSerializer
+from room.serializers import RoomSerializer, RoomConfigSerializer
 
 logger = logging.getLogger('account')
 
@@ -39,7 +39,16 @@ class RoomView(APIView):
         """
         try:
             room_queryset = Room.objects.filter(members__user=request.user)
-            rooms = ListRoomSerializer(room_queryset, many=True).data
+            rooms = RoomSerializer(room_queryset, many=True).data
+            for room in rooms:
+                room['member_count'] = len(room['members'])
+                room.pop('members')
+
+                room_config_queryset = RoomConfig.objects.filter(room__id=room['id'])
+                if not room_config_queryset.exists():
+                    return Response(status=status.HTTP_404_NOT_FOUND, data=not_found_error_return)
+
+                room['master_name'] = room_config_queryset[0].master.name
 
             return_data = {
                 'result': True,

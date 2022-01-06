@@ -4,14 +4,6 @@ from account.serializers import MemberSerializer
 from room.models import RoomConfig, Room
 
 
-class ListRoomSerializer(ModelSerializer):
-
-    class Meta:
-        model = Room
-        fields = ('id',
-                  'name')
-
-
 class RoomConfigSerializer(ModelSerializer):
     master = MemberSerializer(read_only=True)
 
@@ -25,5 +17,6 @@ class RoomSerializer(ModelSerializer):
 
     class Meta:
         model = Room
-        fields = ('name',
+        fields = ('id',
+                  'name',
                   'members')

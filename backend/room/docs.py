@@ -5,12 +5,22 @@ class RoomDoc:
     # Request
     id_field = openapi.Schema(
         'id',
-        description='member id',
+        description='room id',
         type=openapi.TYPE_INTEGER
     )
     request_name_field = openapi.Schema(
         'name',
         description='스터디 룸 이름',
+        type=openapi.TYPE_STRING
+    )
+    member_count_field = openapi.Schema(
+        'member_count',
+        description='스터디 룸 인원 수',
+        type=openapi.TYPE_INTEGER
+    )
+    master_name_field = openapi.Schema(
+        'master_name',
+        description='스터디 룸 방장 이름',
         type=openapi.TYPE_STRING
     )
     post_data_type = openapi.Schema(
@@ -56,7 +66,9 @@ class RoomDoc:
         type=openapi.TYPE_OBJECT,
         properties={
             'id': id_field,
-            'name': request_name_field
+            'name': request_name_field,
+            'member_count': member_count_field,
+            'master_name': master_name_field
         }
     )
     result_field = openapi.Schema(
