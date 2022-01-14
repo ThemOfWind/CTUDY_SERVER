@@ -10,15 +10,15 @@ from room.docs import RoomDoc
 from room.models import Room, RoomConfig
 from room.serializers import RoomSerializer, RoomConfigSerializer
 
-logger = logging.getLogger('account')
+logger = logging.getLogger('room')
 
-server_error_return = {'result': False, 'response': {'message': 'Internal Server Error'}}
-param_error_return = {'result': False, 'response': {'message': 'parameter is not present'}}
-auth_error_return = {'result': False, 'response': {'message': 'AuthenticationException'}}
-active_error_return = {'result': False, 'response': {'message': 'User is not activated'}}
-exist_error_return = {'result': False, 'response': {'message': 'Username exists'}}
-not_found_error_return = {'result': False, 'response': {'message': 'Not found data'}}
-data_conflict_error_return = {'result': False, 'response': {'message': 'Data conflict error'}}
+server_error_return = {'result': False, 'error': {'message': 'Internal Server Error'}}
+param_error_return = {'result': False, 'error': {'message': 'parameter is not present'}}
+auth_error_return = {'result': False, 'error': {'message': 'AuthenticationException'}}
+active_error_return = {'result': False, 'error': {'message': 'User is not activated'}}
+exist_error_return = {'result': False, 'error': {'message': 'Username exists'}}
+not_found_error_return = {'result': False, 'error': {'message': 'Not found data'}}
+data_conflict_error_return = {'result': False, 'error': {'message': 'Data conflict error'}}
 
 
 class RoomView(APIView):
