@@ -23,6 +23,18 @@ class RoomDoc:
         description='스터디 룸 방장 이름',
         type=openapi.TYPE_STRING
     )
+    member_pk_field = openapi.Schema(
+        'pk',
+        description='멤버 pk',
+        type=openapi.TYPE_INTEGER
+    )
+    member_list_field = openapi.Schema(
+        'member_list',
+        description='멤버 pk 리스트',
+        type=openapi.TYPE_ARRAY,
+        items=member_pk_field
+    )
+
     post_data_type = openapi.Schema(
         'data',
         description='POST Data Body',
@@ -39,6 +51,15 @@ class RoomDoc:
         properties={
             'name': request_name_field,
             'master': id_field
+        }
+    )
+
+    post_member_data_type = openapi.Schema(
+        'data',
+        description='POST Data Body',
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'member_list': member_list_field
         }
     )
 
@@ -99,4 +120,26 @@ class RoomDoc:
             'result': result_field,
             'response': None
         }
+    )
+
+
+class MemberListDoc:
+    # Request
+    param_max_page_data = openapi.Parameter(
+        'max_page',
+        openapi.IN_QUERY,
+        description='리턴 시 최대 개수',
+        type=openapi.TYPE_INTEGER
+    )
+    param_order_field_data = openapi.Parameter(
+        'order_field',
+        openapi.IN_QUERY,
+        description='정렬할 필드',
+        type=openapi.TYPE_STRING
+    )
+    param_order_data = openapi.Parameter(
+        'order',
+        openapi.IN_QUERY,
+        description='정렬 규칙 (asc, desc)',
+        type=openapi.TYPE_STRING
     )

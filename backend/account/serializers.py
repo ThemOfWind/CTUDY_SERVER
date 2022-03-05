@@ -1,6 +1,13 @@
+from django.contrib.auth.models import User
 from rest_framework.serializers import ModelSerializer
 
 from .models import Member
+
+
+class UserSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username',)
 
 
 class MemberSerializer(ModelSerializer):
@@ -8,3 +15,12 @@ class MemberSerializer(ModelSerializer):
         model = Member
         fields = ('id',
                   'name')
+
+
+class MemberListSerializer(ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = Member
+        fields = ('id',
+                  'user')
