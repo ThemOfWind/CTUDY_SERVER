@@ -1,6 +1,6 @@
 from typing import List
 
-from ninja import ModelSchema, Schema
+from ninja import Schema
 
 
 class ErrorMessage(Schema):

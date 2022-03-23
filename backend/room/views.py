@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from account.models import Member
-from account.serializers import MemberSerializer, MemberListSerializer
+from account.serializers import MemberListSerializer
 from ctudy_server.pagination import CustomPagination
 from room.docs import RoomDoc, MemberListDoc
 from room.models import Room, RoomConfig

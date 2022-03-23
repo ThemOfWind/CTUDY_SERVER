@@ -220,3 +220,7 @@ LOGGING = {
 
 TOKEN_URL = 'http://localhost:8000/o/token/'
 APP_NAME = 'ctudy'
+
+
+USE_X_FORWARDED_HOST = True
+HTTP_X_FORWARDED_HOST = 'https://api.ctudy.com/'
