@@ -5,6 +5,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import permissions, status, generics
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -328,6 +329,9 @@ class MemberListView(generics.ListAPIView):
 
             return Response(return_data)
 
+        except NotFound as e:
+            logger.error(e)
+            return Response(status=status.HTTP_404_NOT_FOUND, data=not_found_error_return)
         except Exception as e:
             logger.error(e)
             return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data=server_error_return)

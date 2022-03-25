@@ -10,9 +10,10 @@ class CustomPagination(pagination.PageNumberPagination):
         """
         return data 커스터마이징
         """
+        _next = self.get_next_link()
         return_data = data
         return_data['response']['page'] = self.page.number
-        return_data['response']['next'] = self.get_next_link()
+        return_data['response']['next'] = _next.split('page=')[-1] if type(_next) is str else None
         return_data['response']['previous'] = self.get_previous_link()
         return_data['response']['totalCount'] = self.page.paginator.count
         return_data['response']['firstPage'] = 1
