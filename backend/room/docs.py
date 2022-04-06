@@ -41,6 +41,7 @@ class RoomDoc:
         type=openapi.TYPE_OBJECT,
         properties={
             'name': request_name_field,
+            'member_list': member_list_field
         }
     )
 

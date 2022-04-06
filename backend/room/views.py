@@ -82,6 +82,7 @@ class RoomView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST, data=param_error_return)
 
             name = request.data['name']
+            member_list = request.data.get('member_list')
 
             member = Member.objects.filter(user=request.user)
             if not member.exists():
@@ -93,6 +94,12 @@ class RoomView(APIView):
 
             room = Room.objects.create(name=name)
             room.members.add(member)
+
+            if member_list is not None:
+                member_list = [get_object_or_404(Member, pk=m) for m in member_list]
+                if len(member_list) > 0:
+                    room.members.add(*member_list)
+
             room.save()
             RoomConfig.objects.create(room=room, master=member)
 
