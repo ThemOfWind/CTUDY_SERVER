@@ -178,11 +178,7 @@ class LogoutView(APIView):
             # 로그아웃 API
         """
         try:
-            refresh_token_list = RefreshToken.objects.filter(user=request.user)
-            for refresh_token in refresh_token_list:
-                refresh_token.revoked = datetime.datetime.now()
-                refresh_token.save()
-
+            RefreshToken.objects.filter(user=request.user).delete()
             AccessToken.objects.filter(user=request.user).delete()
 
             return_data = {
