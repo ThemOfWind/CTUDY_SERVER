@@ -158,3 +158,45 @@ class LogoutDoc:
             'response': None
         }
     )
+
+
+class ProfileDoc:
+    # Response
+    username_field = openapi.Schema(
+        'username',
+        description='username (email)',
+        type=openapi.TYPE_STRING
+    )
+    name_field = openapi.Schema(
+        'name',
+        description='이름',
+        type=openapi.TYPE_STRING
+    )
+    user_resp = openapi.Schema(
+        'user',
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'username': username_field,
+        }
+    )
+    response_resp = openapi.Schema(
+        'response',
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'user': user_resp,
+            'name': name_field
+        }
+    )
+    result_field = openapi.Schema(
+        'result',
+        description='처리 결과',
+        type=openapi.TYPE_BOOLEAN
+    )
+    success_resp = openapi.Schema(
+        'response',
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'result': result_field,
+            'response': response_resp
+        }
+    )

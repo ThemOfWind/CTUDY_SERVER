@@ -4,13 +4,15 @@ import logging
 import requests
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from oauth2_provider.models import Application, RefreshToken, AccessToken
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from account.docs import SignInDoc, SignUpDoc, LogoutDoc
+from account.docs import SignInDoc, SignUpDoc, LogoutDoc, ProfileDoc
 from account.models import Member
+from account.serializers import ProfileSerializer
 
 logger = logging.getLogger('account')
 
@@ -184,6 +186,37 @@ class LogoutView(APIView):
             return_data = {
                 'result': True,
                 'response': None
+            }
+
+            return Response(status=status.HTTP_200_OK, data=return_data)
+
+        except Exception as e:
+            logger.error(e.__str__())
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR, data=server_error_return)
+
+
+class ProfileView(APIView):
+    """
+    ProfileView: 회원 정보 조회 API
+    """
+
+    permission_classes = [permissions.IsAuthenticated]
+
+    @staticmethod
+    @swagger_auto_schema(
+        responses={200: ProfileDoc.success_resp}
+    )
+    def get(request):
+        """
+        get:
+            # 회원 정보 조회 API
+        """
+        try:
+            member = get_object_or_404(Member, user=request.user)
+            data = ProfileSerializer(member).data
+            return_data = {
+                'result': True,
+                'response': data
             }
 
             return Response(status=status.HTTP_200_OK, data=return_data)
