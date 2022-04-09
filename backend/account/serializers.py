@@ -25,12 +25,3 @@ class ProfileSerializer(ModelSerializer):
         fields = ('id',
                   'user',
                   'name')
-
-
-class MemberListSerializer(ModelSerializer):
-    user = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Member
-        fields = ('id',
-                  'user')

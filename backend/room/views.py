@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from account.models import Member
-from account.serializers import MemberListSerializer
+from account.serializers import ProfileSerializer
 from ctudy_server.pagination import CustomPagination
 from room.docs import RoomDoc, MemberListDoc
 from room.models import Room, RoomConfig
@@ -246,7 +246,7 @@ class MemberListView(generics.ListAPIView):
 
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = CustomPagination
-    serializer_class = MemberListSerializer
+    serializer_class = ProfileSerializer
 
     @staticmethod
     def get_return_data(member_list):
