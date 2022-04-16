@@ -13,14 +13,34 @@ class RoomDoc:
         description='스터디 룸 이름',
         type=openapi.TYPE_STRING
     )
+    member_id_field = openapi.Schema(
+        'id',
+        description='멤버 pk id',
+        type=openapi.TYPE_INTEGER
+    )
+    member_name_field = openapi.Schema(
+        'name',
+        description='멤버 이름',
+        type=openapi.TYPE_STRING
+    )
+    member_username_field = openapi.Schema(
+        'username',
+        description='멤버 로그인 아이디',
+        type=openapi.TYPE_STRING
+    )
     member_count_field = openapi.Schema(
         'member_count',
         description='스터디 룸 인원 수',
         type=openapi.TYPE_INTEGER
     )
     master_name_field = openapi.Schema(
-        'master_name',
+        'name',
         description='스터디 룸 방장 이름',
+        type=openapi.TYPE_STRING
+    )
+    master_username_field = openapi.Schema(
+        'username',
+        description='스터디 룸 방장 로그인 아이디',
         type=openapi.TYPE_STRING
     )
     member_pk_field = openapi.Schema(
@@ -69,8 +89,19 @@ class RoomDoc:
         'member data',
         type=openapi.TYPE_OBJECT,
         properties={
-            'id': id_field,
-            'name': request_name_field,
+            'id': member_id_field,
+            'name': member_name_field,
+            'username': member_username_field
+        }
+    )
+
+    master_data = openapi.Schema(
+        'master data',
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'id': member_id_field,
+            'name': master_name_field,
+            'username': master_username_field
         }
     )
 
@@ -80,7 +111,7 @@ class RoomDoc:
         properties={
             'name': request_name_field,
             'members': member_data,
-            'master': member_data
+            'master': master_data
         }
     )
     list_success_resp_data = openapi.Schema(
