@@ -142,11 +142,16 @@ class SingleRoomView(APIView):
             room_config = RoomConfigSerializer(room_config_queryset[0]).data
             room = RoomSerializer(room_queryset[0]).data
 
+            master_user = room_config['master'].pop('user')
+            room_config['master']['username'] = master_user['username']
+
             delete_member = None
             for member in room['members']:
                 if member['id'] == room_config['master']['id']:
                     delete_member = member
-                    break
+                    continue
+                user = member.pop('user')
+                member['username'] = user['username']
 
             room['members'].remove(delete_member)
 
