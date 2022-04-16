@@ -9,7 +9,7 @@ from ninja import Router
 from room.models import Room
 from room.schemas import PostSuccess, ErrorMessage, RoomSchemaIn, RoomSchema, SuccessStatus
 from utils.common import AuthBearer
-from utils.error_messages import server_error_return, not_found_error_return
+from utils.error import server_error_return, not_found_error_return
 
 
 router = Router(tags=['Room'])

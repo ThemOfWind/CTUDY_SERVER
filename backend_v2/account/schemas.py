@@ -1,8 +1,6 @@
 from ninja import Schema
 
-
-class ErrorMessage(Schema):
-    message: str
+from utils.common import ResponseSchema
 
 
 class SuccessStatus(Schema):
@@ -22,8 +20,20 @@ class SignupSchema(Schema):
     username: str
     password: str
     name: str
+    nickname: str
 
 
-class ResponseSchema(Schema):
-    result: bool
-    response: dict
+class TokenSchema(Schema):
+    access_token: str
+    expires_in: int
+    token_type: str
+    scope: str
+    refresh_token: str
+
+
+class SuccessStatusResponse(ResponseSchema):
+    response: SuccessStatus
+
+
+class TokenResponse(ResponseSchema):
+    response: TokenSchema

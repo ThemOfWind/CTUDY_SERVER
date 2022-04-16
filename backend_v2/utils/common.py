@@ -1,13 +1,15 @@
 import datetime
 import os
+from typing import Any
 from uuid import uuid4
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from ninja import Schema
 from ninja.security import HttpBearer
 from oauth2_provider.models import AccessToken
 
-from utils.error_messages import auth_error_return
+from utils.error import auth_error_return
 
 
 class AuthBearer(HttpBearer):
@@ -15,9 +17,10 @@ class AuthBearer(HttpBearer):
         try:
             access_token = get_object_or_404(AccessToken, token=token)
             if token == access_token.token and datetime.datetime.now() < access_token.expires:
+                request.user = access_token.user
                 return token
         except Http404:
-            return 401, auth_error_return
+            return 401, False
 
 
 def path_and_rename(instance, filename):
@@ -26,3 +29,17 @@ def path_and_rename(instance, filename):
     filename = '{}.{}'.format(uuid4().hex, ext)
 
     return os.path.join(upload_to, filename)
+
+
+class ResponseSchema(Schema):
+    result: bool
+    response: Any
+
+
+class ErrorMessage(Schema):
+    message: str
+
+
+class ErrorResponseSchema(Schema):
+    result: bool = False
+    error: ErrorMessage

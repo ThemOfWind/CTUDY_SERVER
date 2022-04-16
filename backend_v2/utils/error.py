@@ -7,3 +7,12 @@ active_error_return = {'result': False, 'error': {'message': 'User is not activa
 exist_error_return = {'result': False, 'error': {'message': 'Username exists'}}
 not_found_error_return = {'result': False, 'error': {'message': 'Not found data'}}
 data_conflict_error_return = {'result': False, 'error': {'message': 'Data conflict error'}}
+
+
+class CtudyException(Exception):
+    def __init__(self, code, message):
+        self.code = code
+        self.message = message
+
+    def __str__(self):
+        return self.message
