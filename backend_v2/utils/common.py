@@ -26,6 +26,7 @@ class AuthBearer(HttpBearer):
 def path_and_rename(instance, filename):
     upload_to = 'public/profile/'
     ext = filename.split('.')[-1]
+    # ext = 'png'
     filename = '{}.{}'.format(uuid4().hex, ext)
 
     return os.path.join(upload_to, filename)

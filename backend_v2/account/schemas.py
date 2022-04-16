@@ -19,8 +19,8 @@ class LoginSchema(Schema):
 class SignupSchema(Schema):
     username: str
     password: str
+    email: str
     name: str
-    nickname: str
 
 
 class TokenSchema(Schema):

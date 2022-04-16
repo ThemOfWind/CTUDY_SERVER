@@ -76,17 +76,18 @@ def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None
         payload_data = payload.dict()
         username = payload_data.pop('username')
         password = payload_data.pop('password')
+        email = payload_data.pop('email')
 
         if User.objects.filter(username=username).exists():
             raise CtudyException(code=400, message=exist_error_return)
 
         user = User.objects.create_user(username=username,
-                                        email=username,
+                                        email=email,
                                         password=password)
         payload_data['user'] = user
         if file is not None:
             payload_data['image'] = file
-        Member.objects.create(**payload.dict())
+        Member.objects.create(**payload_data)
 
         return_data = {
             'result': True,
@@ -105,7 +106,7 @@ def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None
         return 500, server_error_return
 
 
-@router.get("/logout/{account_id}", auth=AuthBearer(),
+@router.get("/logout/", auth=AuthBearer(),
             response={200: SuccessStatusResponse, error_codes: ErrorResponseSchema})
 def logout(request):
     try:
