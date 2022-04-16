@@ -5,3 +5,4 @@ backend/.idea
 .DS_Store
 backend_v2/db.sqlite3
 *.log
+backend_v2/media/public
