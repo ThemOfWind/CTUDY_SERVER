@@ -8,7 +8,8 @@ from ninja import Router, Form, UploadedFile
 from oauth2_provider.models import Application, RefreshToken, AccessToken
 
 from account.models import Member
-from account.schemas import LoginSchema, SignupSchema, SuccessStatusResponse, TokenResponse
+from account.schemas import LoginSchema, SignupSchema, SuccessStatusResponse, TokenResponse, ProfileResponse, \
+    UsernameCheckResponse
 from settings.auth import AuthBearer, auth_check
 from utils.response import ErrorResponseSchema
 from utils.error import server_error_return, param_error_return, auth_error_return, \
@@ -70,6 +71,29 @@ def login(request, payload: LoginSchema):
         return 500, server_error_return
 
 
+@router.get("/signup/", response={200: UsernameCheckResponse, error_codes: ErrorResponseSchema})
+def username_check(request, username: str):
+    try:
+        if Member.objects.filter(username=username).exists():
+            raise CtudyException(code=400, message=exist_error_return)
+
+        return_data = {
+            'result': True,
+            'response': {
+                'username': username
+            }
+        }
+
+        return 200, return_data
+
+    except CtudyException as e:
+        return e.code, e.message
+
+    except Exception as e:
+        logger.error(e.__str__())
+        return 500, server_error_return
+
+
 @router.post("/signup/", response={200: SuccessStatusResponse, error_codes: ErrorResponseSchema})
 def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None):
     try:
@@ -105,9 +129,6 @@ def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None
 @auth_check
 def logout(request):
     try:
-        if type(request.auth) is not str and not request.auth[-1]:
-            raise CtudyException(code=401, message=auth_error_return)
-
         RefreshToken.objects.filter(user=request.user).delete()
         AccessToken.objects.filter(user=request.user).delete()
         return_data = {
@@ -115,6 +136,25 @@ def logout(request):
             'response': {
                 'success': True
             }
+        }
+
+        return 200, return_data
+
+    except CtudyException as e:
+        return e.code, e.message
+
+    except Exception as e:
+        logger.error(e.__str__())
+        return 500, server_error_return
+
+
+@router.get("/profile/", response={200: ProfileResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@auth_check
+def profile(request):
+    try:
+        return_data = {
+            'result': True,
+            'response': request.user
         }
 
         return 200, return_data

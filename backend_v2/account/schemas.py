@@ -22,6 +22,10 @@ class SuccessStatus(Schema):
     success: bool
 
 
+class UsernameCheck(Schema):
+    username: str
+
+
 class TokenSchema(Schema):
     access_token: str
     expires_in: int
@@ -45,3 +49,11 @@ class SuccessStatusResponse(ResponseSchema):
 
 class TokenResponse(ResponseSchema):
     response: TokenSchema
+
+
+class ProfileResponse(ResponseSchema):
+    response: MemberSchema
+
+
+class UsernameCheckResponse(ResponseSchema):
+    response: UsernameCheck
