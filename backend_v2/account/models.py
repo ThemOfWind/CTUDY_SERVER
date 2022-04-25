@@ -1,10 +1,21 @@
-from django.contrib.auth.models import User
+import os
+from uuid import uuid4
+
+from django.contrib.auth.models import User, AbstractUser
 from django.db import models
 
-from utils.common import path_and_rename
+
+def path_and_rename(instance, filename):
+    upload_to = 'public/profile/'
+    ext = filename.split('.')[-1]
+    # ext = 'png'
+    filename = '{}.{}'.format(uuid4().hex, ext)
+    return os.path.join(upload_to, filename)
 
 
-class Member(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+class Member(AbstractUser):
+    # user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     image = models.ImageField(upload_to=path_and_rename, blank=True, null=True)
+    first_name = None
+    last_name = None

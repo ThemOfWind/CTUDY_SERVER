@@ -1,16 +1,11 @@
-from ninja import Schema
+from django.contrib.auth.models import User
+from ninja import Schema, ModelSchema
 
-from utils.common import ResponseSchema
-
-
-class SuccessStatus(Schema):
-    success: bool
+from account.models import Member
+from utils.response import ResponseSchema
 
 
-class PostSuccess(Schema):
-    id: str
-
-
+# In Schema
 class LoginSchema(Schema):
     username: str
     password: str
@@ -23,12 +18,25 @@ class SignupSchema(Schema):
     name: str
 
 
+# Out Schema
+class SuccessStatus(Schema):
+    success: bool
+
+
 class TokenSchema(Schema):
     access_token: str
     expires_in: int
     token_type: str
     scope: str
     refresh_token: str
+
+
+class MemberSchema(ModelSchema):
+    class Config:
+        model = Member
+        model_fields = ('id',
+                        'name',
+                        'username')
 
 
 class SuccessStatusResponse(ResponseSchema):
