@@ -204,6 +204,10 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'DEBUG'
         },
+        'member': {
+            'handlers': ['file'],
+            'level': 'DEBUG'
+        },
         'coupon': {
             'handlers': ['file'],
             'level': 'DEBUG'

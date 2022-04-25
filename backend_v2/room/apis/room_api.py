@@ -14,7 +14,7 @@ from settings.auth import AuthBearer, auth_check, master_check
 from utils.response import ErrorResponseSchema
 from utils.error import server_error_return, not_found_error_return, error_codes, CtudyException
 
-router = Router(tags=['Room'])
+router = Router(tags=['Study - Room'])
 logger = logging.getLogger('room')
 
 
