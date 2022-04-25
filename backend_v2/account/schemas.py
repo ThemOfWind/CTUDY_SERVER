@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from ninja import Schema, ModelSchema
 
 from account.models import Member
@@ -36,7 +35,8 @@ class MemberSchema(ModelSchema):
         model = Member
         model_fields = ('id',
                         'name',
-                        'username')
+                        'username',
+                        'image')
 
 
 class SuccessStatusResponse(ResponseSchema):

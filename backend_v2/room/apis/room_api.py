@@ -1,14 +1,15 @@
 import datetime
 import logging
 
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from ninja import Router, Form, UploadedFile
+from ninja import Router, UploadedFile
 
 from account.models import Member
 from room.models import Room, RoomConfig
 from room.schemas import RoomSchema, RoomCreateIn, RoomUpdateIn, RoomIdResponse, SuccessResponse, RoomListResponse, \
-    RoomDetailResponse, MemberSchema
+    RoomDetailResponse
 from settings.auth import AuthBearer, auth_check, master_check
 from utils.response import ErrorResponseSchema
 from utils.error import server_error_return, not_found_error_return, error_codes, CtudyException
@@ -21,18 +22,19 @@ logger = logging.getLogger('room')
 @auth_check
 def list_room(request):
     try:
-        room_list = Room.objects.filter(members__user=request.user, is_deleted=False)\
-            .prefetch_related('roomconfig_set')\
-            .prefetch_related('members')
+        room_list = Room.objects.filter(
+            Q(members=request.user) | Q(roomconfig__master=request.user),
+            is_deleted=False
+        )
 
         result = list()
         for room in room_list:
-            room_data = {
+            result.append({
                 **RoomSchema.validate(room).dict(),
-                'member_count': room.members.count(),
-                'master_name': room.roomconfig_set.get(room=room).master.name
-            }
-            result.append(room_data)
+                'member_count': room.members.count() + 1,
+                'master_name': room.roomconfig.master.name
+            })
+
         return_data = {
             'result': True,
             'response': result
@@ -52,14 +54,20 @@ def list_room(request):
 
 @router.post("/", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @auth_check
-def create_room(request, payload: RoomCreateIn = Form(...), file: UploadedFile = None):
+def create_room(request, payload: RoomCreateIn, file: UploadedFile = None):
     try:
         payload_data = payload.dict()
         if file is not None:
             payload_data['banner'] = file
+        member_list = payload_data.pop('member_list')
         room = Room.objects.create(**payload_data)
-        room.members.add(request.user)
-        room.save()
+        if len(member_list) > 0:
+            q = Q()
+            [q.add(Q(id=member_id), Q.OR) for member_id in member_list if member_id != request.user.id]
+            if len(q) > 0:
+                member_list = Member.objects.filter(q)
+                room.members.add(*member_list)
+                room.save()
         RoomConfig.objects.create(room=room, master=request.user)
 
         return_data = {
@@ -82,9 +90,7 @@ def create_room(request, payload: RoomCreateIn = Form(...), file: UploadedFile =
 @auth_check
 def get_room(request, room_id: str):
     try:
-        room = Room.objects.filter(id=room_id, is_deleted=False)\
-            .prefetch_related('roomconfig_set') \
-            .prefetch_related('members')
+        room = Room.objects.filter(id=room_id, is_deleted=False)
 
         if not room.exists():
             raise CtudyException(404, not_found_error_return)
@@ -95,8 +101,8 @@ def get_room(request, room_id: str):
             'result': True,
             'response': {
                 **RoomSchema.validate(room).dict(),
-                'members': [MemberSchema.validate(m) for m in room.members.all()],
-                'master': room.roomconfig_set.get(room=room).master
+                'members': list(room.members.all()),
+                'master': room.roomconfig.master
             }
         }
         return 200, return_data
@@ -114,16 +120,22 @@ def get_room(request, room_id: str):
 @master_check
 def update_room(request, room_id: str, payload: RoomUpdateIn):
     try:
-        room = get_object_or_404(Room, id=room_id)
+        room = None
         for attr, value in payload.dict().items():
             if value is not None:
                 if attr == 'master':
-                    room_config = get_object_or_404(RoomConfig, room=room)
-                    room_config.master = get_object_or_404(Member, id=value)
-                    room_config.save()
+                    member = get_object_or_404(Member, id=value)
+                    room = member.room_set.filter(id=room_id)
+                    if room.exists():
+                        room = room[0]
+                        room.members.remove(member)
+                        room.members.add(request.user)
+                        room.roomconfig.master = member
+                        room.roomconfig.save()
                 else:
+                    room = get_object_or_404(Room, id=room_id)
                     setattr(room, attr, value)
-        room.save()
+                    room.save()
 
         return_data = {
             'result': True,

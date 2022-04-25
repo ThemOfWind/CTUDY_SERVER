@@ -21,6 +21,7 @@ class PostSuccess(Schema):
 
 class RoomCreateIn(Schema):
     name: str
+    member_list: List[int]
 
 
 class RoomUpdateIn(Schema):

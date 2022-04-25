@@ -211,5 +211,5 @@ LOGGING = {
     }
 }
 
-TOKEN_URL = 'http://localhost:8000/o/token/'
+TOKEN_URL = 'http://localhost:8000/api/v2/o/token/'
 APP_NAME = 'ctudy'

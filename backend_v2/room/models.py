@@ -23,5 +23,5 @@ class Room(models.Model):
 
 
 class RoomConfig(models.Model):
-    room = models.ForeignKey(Room, on_delete=models.CASCADE)
+    room = models.OneToOneField(Room, on_delete=models.CASCADE)
     master = models.ForeignKey(Member, on_delete=models.SET_NULL, null=True)

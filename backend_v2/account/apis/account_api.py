@@ -78,9 +78,7 @@ def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None
         if Member.objects.filter(username=payload_data['username']).exists():
             raise CtudyException(code=400, message=exist_error_return)
 
-        member = Member.objects.create_user(username=payload_data['username'],
-                                            password=payload_data['password'],
-                                            email=payload_data['email'])
+        member = Member.objects.create_user(**payload_data)
 
         if file is not None:
             member.image = file

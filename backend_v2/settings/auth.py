@@ -33,8 +33,8 @@ def auth_check(ori_func):
 def master_check(ori_func):
     @wraps(ori_func)
     def inner(request, **kwargs):
-        room = Room.objects.filter(id=kwargs['room_id']).prefetch_related('roomconfig_set')[0]
-        if request.user.member != room.roomconfig_set.get(room=room).master:
+        room = Room.objects.filter(id=kwargs['room_id'])[0]
+        if request.user != room.roomconfig.master:
             return 401, auth_error_return
         return ori_func(request, **kwargs)
     return inner
