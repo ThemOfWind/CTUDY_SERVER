@@ -7,26 +7,13 @@ from room.models import Room
 from utils.response import ResponseSchema
 
 
-class ErrorMessage(Schema):
-    message: str
-
-
+# Core Schema
 class SuccessStatus(Schema):
     success: bool
 
 
 class PostSuccess(Schema):
     id: str
-
-
-class RoomCreateIn(Schema):
-    name: str
-    member_list: List[int]
-
-
-class RoomUpdateIn(Schema):
-    name: str = None
-    master: int = None
 
 
 class RoomSchema(ModelSchema):
@@ -52,6 +39,22 @@ class RoomDetailSchema(Schema):
     master: MemberSchema
 
 
+# In Schema
+class RoomCreateIn(Schema):
+    name: str
+    member_list: List[int]
+
+
+class RoomUpdateIn(Schema):
+    name: str = None
+    master: int = None
+
+
+class MemberJoinIn(Schema):
+    member_list: List[int]
+
+
+# Out Schema
 class RoomListResponse(ResponseSchema):
     response: List[RoomListSchema]
 
