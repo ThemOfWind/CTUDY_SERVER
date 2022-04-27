@@ -2,13 +2,12 @@ import logging
 from typing import List
 
 from django.db.models import Q
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from ninja import Router
 from ninja.pagination import paginate
 
 from account.models import Member
-from account.schemas import MemberSchema, MemberListResponse
+from account.schemas import MemberSchema
 from room.models import Room
 from room.schemas import SuccessResponse, MemberIn
 from settings.auth import AuthBearer, auth_check, master_check

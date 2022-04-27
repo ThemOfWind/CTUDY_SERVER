@@ -14,6 +14,9 @@ def base_api(logger):
             except Http404 as e:
                 logger.error(e.__str__())
                 raise CtudyException(404, not_found_error_return)
+            except CtudyException as e:
+                logger.error(e.message)
+                raise CtudyException(e.code, e.message)
             except Exception as e:
                 logger.error(e.__str__())
                 raise CtudyException(500, server_error_return)
