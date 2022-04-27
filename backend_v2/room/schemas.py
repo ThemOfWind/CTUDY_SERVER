@@ -50,7 +50,7 @@ class RoomUpdateIn(Schema):
     master: int = None
 
 
-class MemberJoinIn(Schema):
+class MemberIn(Schema):
     member_list: List[int]
 
 

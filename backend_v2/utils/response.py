@@ -8,6 +8,13 @@ class ResponseSchema(Schema):
     response: Any
 
 
+class PaginationSchema(Schema):
+    count: int
+    next: str = None
+    previous: str = None
+    items: Any
+
+
 class ErrorMessage(Schema):
     message: str
 

@@ -1,7 +1,9 @@
+from typing import List
+
 from ninja import Schema, ModelSchema
 
 from account.models import Member
-from utils.response import ResponseSchema
+from utils.response import ResponseSchema, PaginationSchema
 
 
 # In Schema
@@ -43,6 +45,10 @@ class MemberSchema(ModelSchema):
                         'image')
 
 
+class MemberPaginationSchema(PaginationSchema):
+    items: List[MemberSchema]
+
+
 class SuccessStatusResponse(ResponseSchema):
     response: SuccessStatus
 
@@ -57,3 +63,7 @@ class ProfileResponse(ResponseSchema):
 
 class UsernameCheckResponse(ResponseSchema):
     response: UsernameCheck
+
+
+class MemberListResponse(ResponseSchema):
+    response: MemberPaginationSchema
