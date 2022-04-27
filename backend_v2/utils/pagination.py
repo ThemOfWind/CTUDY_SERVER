@@ -14,6 +14,9 @@ from ninja_extra.conf import settings
 from ninja_extra.schemas import PaginatedResponseSchema
 from ninja_extra.urls import remove_query_param, replace_query_param
 
+from rest_framework.response import Response
+from rest_framework import pagination
+
 from utils.error import CtudyException, not_found_error_return
 
 
@@ -34,34 +37,33 @@ def _positive_int(
 class PageNumberPaginationExtra(PaginationBase):
     class Input(Schema):
         page: int = Field(1, gt=0)
-        page_size: int = Field(100, lt=200)
+        max_page: int = Field(100, lt=200)
 
     class Output(Schema):
         count: int
         next: str = None
-        previous: str = None
 
     page_query_param = "page"
-    page_size_query_param = "page_size"
+    page_size_query_param = "max_page"
 
     max_page_size = 200
     paginator_class = Paginator
 
     def __init__(
         self,
-        page_size: int = settings.PAGINATION_PER_PAGE,
+        max_page: int = settings.PAGINATION_PER_PAGE,
         max_page_size: Optional[int] = None,
         pass_parameter: Optional[str] = None,
     ) -> None:
         super().__init__(pass_parameter=pass_parameter)
-        self.page_size = page_size
+        self.max_page = max_page
         self.max_page_size = max_page_size or 200
         self.Input = self.create_input()  # type:ignore
 
     def create_input(self) -> Type[Input]:
         class DynamicInput(PageNumberPaginationExtra.Input):
             page: int = Field(1, gt=0)
-            page_size: int = Field(self.page_size, lt=self.max_page_size)
+            max_page: int = Field(self.max_page, lt=self.max_page_size)
 
         return DynamicInput
 
@@ -73,25 +75,22 @@ class PageNumberPaginationExtra(PaginationBase):
         **params: DictStrAny,
     ) -> Any:
         if isinstance(queryset, tuple) and re.match(r'20\d', str(queryset[0])):
-            request = queryset[-1]
             queryset = queryset[1]
 
-        page_size = self.get_page_size(pagination.page_size)
+        max_page = self.get_page_size(pagination.max_page)
         current_page_number = pagination.page
-        paginator = self.paginator_class(queryset, page_size)
+        paginator = self.paginator_class(queryset, max_page)
         try:
-            url = request.build_absolute_uri()
             page: Page = paginator.page(current_page_number)
-            return self.get_paginated_response(base_url=url, page=page)
-        except InvalidPage as exc:
+            return self.get_paginated_response(page=page)
+        except InvalidPage:
             raise CtudyException(code=404, message=not_found_error_return)
 
-    def get_paginated_response(self, *, base_url: str, page: Page) -> DictStrAny:
+    def get_paginated_response(self, *, page: Page) -> DictStrAny:
         return OrderedDict(
             [
                 ("count", page.paginator.count),
-                ("next", self.get_next_link(base_url, page=page)),
-                ("previous", self.get_previous_link(base_url, page=page)),
+                ("next", self.get_next_link(page=page)),
                 ("items", list(page)),
             ]
         )
@@ -102,11 +101,11 @@ class PageNumberPaginationExtra(PaginationBase):
     ) -> Any:
         return PaginatedResponseSchema[response_schema]
 
-    def get_next_link(self, url: str, page: Page) -> Optional[str]:
+    def get_next_link(self, page: Page) -> Optional[str]:
         if not page.has_next():
             return None
         page_number = page.next_page_number()
-        return replace_query_param(url, self.page_query_param, page_number)
+        return str(page_number)
 
     def get_previous_link(self, url: str, page: Page) -> Optional[str]:
         if not page.has_previous():
@@ -116,11 +115,31 @@ class PageNumberPaginationExtra(PaginationBase):
             return remove_query_param(url, self.page_query_param)
         return replace_query_param(url, self.page_query_param, page_number)
 
-    def get_page_size(self, page_size: int) -> int:
-        if page_size:
+    def get_page_size(self, max_page: int) -> int:
+        if max_page:
             try:
-                return _positive_int(page_size, strict=True, cutoff=self.max_page_size)
+                return _positive_int(max_page, strict=True, cutoff=self.max_page_size)
             except (KeyError, ValueError):
                 pass
 
-        return self.page_size
+        return self.max_page
+
+
+class CustomPagination(pagination.PageNumberPagination):
+    """
+    Django 페이지네이션 커스터마이징 클래스
+    """
+    def get_paginated_response(self, data):
+        """
+        return data 커스터마이징
+        """
+        _next = self.get_next_link()
+        return_data = data
+        return_data['response']['page'] = self.page.number
+        return_data['response']['next'] = _next.split('page=')[-1] if type(_next) is str else None
+        return_data['response']['previous'] = self.get_previous_link()
+        return_data['response']['totalCount'] = self.page.paginator.count
+        return_data['response']['firstPage'] = 1
+        return_data['response']['endPage'] = self.page.paginator.num_pages
+
+        return Response(return_data)
