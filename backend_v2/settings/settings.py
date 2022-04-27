@@ -13,7 +13,7 @@ import json
 import os
 from pathlib import Path
 
-ENV = os.environ.get('MODE', 'DEV')
+ENV = os.environ.get('MODE', 'BARE_METAL')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -70,6 +70,7 @@ ROOT_URLCONF = 'settings.urls'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 ACCESS_CONTROL_EXPOSE_HEADERS = ['Content-Disposition']
+CSRF_TRUSTED_ORIGINS = ['https://*.ctudy.com','https://*.127.0.0.1']
 
 TEMPLATES = [
     {
@@ -126,7 +127,7 @@ elif ENV == 'BARE_METAL':
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': secret['DB']['NAME'],
             'HOST': secret['DB']['HOST'],
             'PORT': secret['DB']['PORT'],
@@ -235,5 +236,5 @@ LOGGING = {
     }
 }
 
-TOKEN_URL = 'http://localhost:8000/api/v2/o/token/'
+TOKEN_URL = 'https://api.ctudy.com/api/v2/o/token/'
 APP_NAME = 'ctudy'
