@@ -70,7 +70,7 @@ ROOT_URLCONF = 'settings.urls'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 ACCESS_CONTROL_EXPOSE_HEADERS = ['Content-Disposition']
-CSRF_TRUSTED_ORIGINS = ['https://*.ctudy.com','https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.ctudy.com', 'https://*.127.0.0.1']
 
 TEMPLATES = [
     {
