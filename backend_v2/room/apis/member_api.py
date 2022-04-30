@@ -9,11 +9,11 @@ from ninja.pagination import paginate
 from account.models import Member
 from account.schemas import MemberSchema
 from room.models import Room
-from room.schemas import SuccessResponse, MemberIn
+from room.schemas import MemberIn
 from settings.auth import AuthBearer, auth_check, master_check
 from utils.base import base_api
 from utils.pagination import PageNumberPaginationExtra
-from utils.response import ErrorResponseSchema
+from utils.response import ErrorResponseSchema, SuccessResponse
 from utils.error import error_codes, server_error_return, CtudyException
 
 router = Router(tags=['Study - Member'])

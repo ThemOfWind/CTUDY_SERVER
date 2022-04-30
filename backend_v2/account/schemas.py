@@ -3,7 +3,7 @@ from typing import List
 from ninja import Schema, ModelSchema
 
 from account.models import Member
-from utils.response import ResponseSchema, PaginationSchema
+from utils.response import ResponseSchema, PaginationSchema, SuccessStatus
 
 
 # In Schema
@@ -20,10 +20,6 @@ class SignupSchema(Schema):
 
 
 # Out Schema
-class SuccessStatus(Schema):
-    success: bool
-
-
 class UsernameCheck(Schema):
     username: str
 
@@ -45,12 +41,16 @@ class MemberSchema(ModelSchema):
                         'image')
 
 
+class MemberNameSchema(ModelSchema):
+    class Config:
+        model = Member
+        model_fields = ('id',
+                        'name',
+                        'username')
+
+
 class MemberPaginationSchema(PaginationSchema):
     items: List[MemberSchema]
-
-
-class SuccessStatusResponse(ResponseSchema):
-    response: SuccessStatus
 
 
 class TokenResponse(ResponseSchema):
