@@ -139,7 +139,7 @@ elif ENV == 'BARE_METAL':
 elif ENV == 'K8S':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ['DB_NAME'],
             'HOST': os.environ['DB_HOST'],
             'PORT': os.environ['DB_PORT'],
