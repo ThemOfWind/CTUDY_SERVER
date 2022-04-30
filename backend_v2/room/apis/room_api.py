@@ -8,12 +8,11 @@ from ninja import Router, UploadedFile
 
 from account.models import Member
 from room.models import Room, RoomConfig
-from room.schemas import RoomSchema, RoomCreateIn, RoomUpdateIn, RoomIdResponse, SuccessResponse, RoomListResponse, \
-    RoomDetailResponse
+from room.schemas import RoomSchema, RoomCreateIn, RoomUpdateIn, RoomIdResponse, RoomListResponse, RoomDetailResponse
 from settings.auth import AuthBearer, auth_check, master_check
 from utils.base import base_api
 from utils.error import error_codes
-from utils.response import ErrorResponseSchema
+from utils.response import ErrorResponseSchema, SuccessResponse
 
 router = Router(tags=['Study - Room'])
 logger = logging.getLogger('room')

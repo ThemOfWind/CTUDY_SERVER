@@ -7,11 +7,11 @@ from ninja import Router, Form, UploadedFile
 from oauth2_provider.models import Application, RefreshToken, AccessToken
 
 from account.models import Member
-from account.schemas import LoginSchema, SignupSchema, SuccessStatusResponse, TokenResponse, ProfileResponse, \
+from account.schemas import LoginSchema, SignupSchema, TokenResponse, ProfileResponse, \
     UsernameCheckResponse
 from settings.auth import AuthBearer, auth_check
 from utils.base import base_api
-from utils.response import ErrorResponseSchema
+from utils.response import ErrorResponseSchema, SuccessResponse
 from utils.error import server_error_return, auth_error_return, error_codes, exist_error_return, CtudyException
 
 router = Router(tags=['Account'])
@@ -46,7 +46,10 @@ def login(request, payload: LoginSchema):
         'password': password
     }
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    response = requests.post(url=settings.TOKEN_URL, data=url_data, headers=headers)
+    try:
+        response = requests.post(url=settings.TOKEN_URL, data=url_data, headers=headers)
+    except Exception as e:
+        raise CtudyException(500, e.__str__())
     if response.status_code != 200:
         raise CtudyException(401, auth_error_return)
 
@@ -62,7 +65,7 @@ def username_check(request, username: str):
     return {'username': username}
 
 
-@router.post("/signup/", response={200: SuccessStatusResponse, error_codes: ErrorResponseSchema})
+@router.post("/signup/", response={200: SuccessResponse, error_codes: ErrorResponseSchema})
 @base_api(logger)
 def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None):
     payload_data = payload.dict()
@@ -79,7 +82,7 @@ def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None
     return {'success': True}
 
 
-@router.get("/logout/", response={200: SuccessStatusResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@router.get("/logout/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @base_api(logger)
 @auth_check
 def logout(request):

@@ -13,7 +13,7 @@ import json
 import os
 from pathlib import Path
 
-ENV = os.environ.get('MODE', 'BARE_METAL')
+ENV = os.environ.get('MODE', 'DEV')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'room',
     'account',
+    'coupon'
 ]
 
 MIDDLEWARE = [
@@ -236,5 +237,5 @@ LOGGING = {
     }
 }
 
-TOKEN_URL = 'https://api.ctudy.com/api/v2/o/token/'
+TOKEN_URL = 'http://127.0.0.1:8000/api/v2/o/token/'
 APP_NAME = 'ctudy'

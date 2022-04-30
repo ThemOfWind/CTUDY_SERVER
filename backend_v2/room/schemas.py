@@ -4,18 +4,10 @@ from ninja import Schema, ModelSchema
 
 from account.schemas import MemberSchema
 from room.models import Room
-from utils.response import ResponseSchema
+from utils.response import ResponseSchema, PostSuccess, SuccessStatus
 
 
 # Core Schema
-class SuccessStatus(Schema):
-    success: bool
-
-
-class PostSuccess(Schema):
-    id: str
-
-
 class RoomSchema(ModelSchema):
     class Config:
         model = Room
@@ -65,7 +57,3 @@ class RoomDetailResponse(ResponseSchema):
 
 class RoomIdResponse(ResponseSchema):
     response: PostSuccess
-
-
-class SuccessResponse(ResponseSchema):
-    response: SuccessStatus

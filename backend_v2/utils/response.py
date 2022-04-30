@@ -3,6 +3,14 @@ from typing import Any
 from ninja import Schema
 
 
+class SuccessStatus(Schema):
+    success: bool
+
+
+class PostSuccess(Schema):
+    id: str
+
+
 class ResponseSchema(Schema):
     result: bool
     response: Any
@@ -22,3 +30,7 @@ class ErrorMessage(Schema):
 class ErrorResponseSchema(Schema):
     result: bool = False
     error: ErrorMessage
+
+
+class SuccessResponse(ResponseSchema):
+    response: SuccessStatus
