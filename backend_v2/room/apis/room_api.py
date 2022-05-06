@@ -81,20 +81,19 @@ def get_room(request, room_id: str):
 @auth_check
 @master_check
 def update_room(request, room_id: str, payload: RoomUpdateIn):
-    room = None
+    room = get_object_or_404(Room, id=room_id)
     for attr, value in payload.dict().items():
         if value is not None:
             if attr == 'master':
-                member = get_object_or_404(Member, id=value)
-                room = member.room_set.filter(id=room_id)
-                if room.exists():
-                    room = room[0]
+                member = room.members.filter(id=value)
+                if member.exists():
+                    member = member[0]
                     room.members.remove(member)
                     room.members.add(request.user)
+                    room.save()
                     room.roomconfig.master = member
                     room.roomconfig.save()
             else:
-                room = get_object_or_404(Room, id=room_id)
                 setattr(room, attr, value)
                 room.save()
 
