@@ -14,7 +14,7 @@ from settings.auth import AuthBearer, auth_check, master_check
 from utils.base import base_api
 from utils.pagination import PageNumberPaginationExtra
 from utils.response import ErrorResponseSchema, SuccessResponse
-from utils.error import error_codes, server_error_return, CtudyException
+from utils.error import error_codes, server_error_return, CtudyException, not_found_error_return
 
 router = Router(tags=['Study - Member'])
 logger = logging.getLogger('member')
@@ -40,6 +40,10 @@ def join_member(request, room_id: str, payload: MemberIn):
     room = get_object_or_404(Room, id=room_id)
     q = Q()
     [q.add(Q(id=member_id), Q.OR) for member_id in payload_data['member_list'] if member_id != request.user.id]
+
+    if len(q) <= 0:
+        raise CtudyException(401, not_found_error_return)
+
     member_list = Member.objects.filter(q)
     room.members.add(*member_list)
     room.save()
@@ -56,6 +60,10 @@ def delete_member(request, room_id: str, payload: MemberIn):
     room = get_object_or_404(Room, id=room_id)
     q = Q()
     [q.add(Q(id=member_id), Q.OR) for member_id in payload_data['member_list'] if member_id != request.user.id]
+
+    if len(q) <= 0:
+        raise CtudyException(401, not_found_error_return)
+
     member_list = Member.objects.filter(q)
     room.members.remove(*member_list)
     room.save()

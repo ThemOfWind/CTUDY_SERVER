@@ -4,7 +4,7 @@ import orjson
 from django.http import Http404
 from ninja.renderers import BaseRenderer
 
-from utils.error import CtudyException, not_found_error_return, server_error_return
+from utils.error import CtudyException, not_found_error_return, server_error_return, auth_error_return
 
 
 def base_api(logger):
@@ -31,9 +31,9 @@ class ORJSONRenderer(BaseRenderer):
 
     def render(self, request, data, *, response_status):
         if 'result' not in data:
-            data = {
-                'result': True,
-                'response': data
-            }
+            if response_status == 200:
+                data = {'result': True, 'response': data}
+            elif response_status == 401:
+                data = auth_error_return
 
         return orjson.dumps(data)
