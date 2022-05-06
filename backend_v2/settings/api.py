@@ -4,9 +4,10 @@ from room.apis.room_api import router as room_router
 from room.apis.member_api import router as member_router
 from account.apis.account_api import router as account_router
 from coupon.apis.coupon_api import router as coupon_router
+from utils.base import ORJSONRenderer
 from utils.error import CtudyException
 
-api = NinjaAPI(version='2.0.0', title="CTUDY API", description="Ctudy Backend RESTful API", csrf=False)
+api = NinjaAPI(version='2.0.0', title="CTUDY API", description="Ctudy Backend RESTful API", renderer=ORJSONRenderer())
 
 
 @api.exception_handler(CtudyException)
