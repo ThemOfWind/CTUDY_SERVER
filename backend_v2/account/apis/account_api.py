@@ -8,7 +8,7 @@ from oauth2_provider.models import Application, RefreshToken, AccessToken
 
 from account.models import Member
 from account.schemas import LoginSchema, SignupSchema, TokenResponse, ProfileResponse, \
-    UsernameCheckResponse
+    UsernameCheckResponse, SignupSuccessResponse
 from settings.auth import AuthBearer, auth_check
 from utils.base import base_api
 from utils.response import ErrorResponseSchema, SuccessResponse
@@ -65,7 +65,7 @@ def username_check(request, username: str):
     return {'username': username}
 
 
-@router.post("/signup/", response={200: SuccessResponse, error_codes: ErrorResponseSchema})
+@router.post("/signup/", response={200: SignupSuccessResponse, error_codes: ErrorResponseSchema})
 @base_api(logger)
 def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None):
     payload_data = payload.dict()
@@ -79,7 +79,7 @@ def signup(request, payload: SignupSchema = Form(...), file: UploadedFile = None
         member.image = file
         member.save()
 
-    return {'success': True}
+    return {'username': member.username, 'name': member.name}
 
 
 @router.get("/logout/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
