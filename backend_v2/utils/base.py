@@ -1,6 +1,8 @@
 from functools import wraps
 
+import orjson
 from django.http import Http404
+from ninja.renderers import BaseRenderer
 
 from utils.error import CtudyException, not_found_error_return, server_error_return
 
@@ -22,3 +24,16 @@ def base_api(logger):
                 raise CtudyException(500, server_error_return)
         return inner
     return decorator
+
+
+class ORJSONRenderer(BaseRenderer):
+    media_type = "application/json"
+
+    def render(self, request, data, *, response_status):
+        if 'result' not in data:
+            data = {
+                'result': True,
+                'response': data
+            }
+
+        return orjson.dumps(data)
