@@ -24,6 +24,11 @@ class UsernameCheck(Schema):
     username: str
 
 
+class SignupSuccess(Schema):
+    username: str
+    name: str
+
+
 class TokenSchema(Schema):
     access_token: str
     expires_in: int
@@ -63,6 +68,10 @@ class ProfileResponse(ResponseSchema):
 
 class UsernameCheckResponse(ResponseSchema):
     response: UsernameCheck
+
+
+class SignupSuccessResponse(ResponseSchema):
+    response: SignupSuccess
 
 
 class MemberListResponse(ResponseSchema):
