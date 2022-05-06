@@ -6,7 +6,7 @@ from account.apis.account_api import router as account_router
 from coupon.apis.coupon_api import router as coupon_router
 from utils.error import CtudyException
 
-api = NinjaAPI(version='2.0.0', title="CTUDY API", description="Ctudy Backend RESTful API", csrf=True)
+api = NinjaAPI(version='2.0.0', title="CTUDY API", description="Ctudy Backend RESTful API", csrf=False)
 
 
 @api.exception_handler(CtudyException)
