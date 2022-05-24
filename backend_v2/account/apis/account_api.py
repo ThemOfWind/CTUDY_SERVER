@@ -91,6 +91,14 @@ def logout(request):
     return {'success': True}
 
 
+@router.delete("/withdraw/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@base_api(logger)
+@auth_check
+def withdraw(request):
+    request.user.delete()
+    return {'success': True}
+
+
 @router.get("/profile/", response={200: ProfileResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @base_api(logger)
 @auth_check
