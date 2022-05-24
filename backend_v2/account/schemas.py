@@ -3,7 +3,7 @@ from typing import List
 from ninja import Schema, ModelSchema
 
 from account.models import Member
-from utils.response import ResponseSchema, PaginationSchema, SuccessStatus
+from utils.response import ResponseSchema, PaginationSchema
 
 
 # In Schema
@@ -44,14 +44,6 @@ class MemberSchema(ModelSchema):
                         'name',
                         'username',
                         'image')
-
-
-class MemberNameSchema(ModelSchema):
-    class Config:
-        model = Member
-        model_fields = ('id',
-                        'name',
-                        'username')
 
 
 class MemberPaginationSchema(PaginationSchema):

@@ -1,26 +1,26 @@
-import datetime
 from typing import List
 
 from ninja import Schema, ModelSchema
 
-from account.schemas import MemberNameSchema
+from account.schemas import MemberSchema
 from coupon.models import Coupon
 from utils.response import ResponseSchema
 
 
 # Core Schema
 class CouponSchema(ModelSchema):
-    sender: MemberNameSchema
-    receiver: MemberNameSchema
+    sender: MemberSchema
+    receiver: MemberSchema
 
     class Config:
         model = Coupon
         model_fields = ('id',
                         'name',
-                        'start_date',
-                        'end_date',
                         'sender',
-                        'receiver')
+                        'receiver',
+                        'image',
+                        'start_date',
+                        'end_date')
 
 
 # In Schema
@@ -33,10 +33,5 @@ class CouponCreateIn(Schema):
 
 
 # Out Schema
-class CouponReturnSchema(Schema):
-    send_list: List[CouponSchema] = None
-    receive_list: List[CouponSchema] = None
-
-
 class CouponListResponse(ResponseSchema):
-    response: CouponReturnSchema
+    response: List[CouponSchema]
