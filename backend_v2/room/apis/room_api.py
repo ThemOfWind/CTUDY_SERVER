@@ -31,7 +31,8 @@ def list_room(request):
         result.append({
             **RoomSchema.validate(room).dict(),
             'member_count': room.members.count() + 1,
-            'master_name': room.roomconfig.master.name
+            'master_name': room.roomconfig.master.name,
+            'master_username': room.roomconfig.master.username
         })
 
     return result
