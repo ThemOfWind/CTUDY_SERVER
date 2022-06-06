@@ -2,11 +2,11 @@ import datetime
 import logging
 
 from django.db.models import Q
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from ninja import Router, UploadedFile
 
 from account.models import Member
+from coupon.models import Coupon
 from room.models import Room, RoomConfig
 from room.schemas import RoomSchema, RoomCreateIn, RoomUpdateIn, RoomIdResponse, RoomListResponse, RoomDetailResponse
 from settings.auth import AuthBearer, auth_check, master_check
@@ -67,23 +67,37 @@ def create_room(request, payload: RoomCreateIn, file: UploadedFile = None):
 @base_api(logger)
 @auth_check
 def get_room(request, room_id: str):
-    room = Room.objects.filter(id=room_id, is_deleted=False)
+    room = get_object_or_404(Room, id=room_id, is_deleted=False)
+    members = list()
 
-    if not room.exists():
-        raise Http404
+    for member in room.members.all():
+        member.coupon = Coupon.objects.filter(room=room, receiver=member).count()
+        members.append(member)
 
-    room = room[0]
+    master = room.roomconfig.master
+    master.coupon = Coupon.objects.filter(room=room, receiver=master).count()
 
-    return {**RoomSchema.validate(room).dict(), 'members': list(room.members.all()), 'master': room.roomconfig.master}
+    result = {
+        **RoomSchema.validate(room).dict(),
+        'members': members,
+        'master': master
+    }
+
+    return result
 
 
-@router.put("/{room_id}", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@router.post("/{room_id}", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @base_api(logger)
 @auth_check
 @master_check
-def update_room(request, room_id: str, payload: RoomUpdateIn):
+def update_room(request, room_id: str, payload: RoomUpdateIn, file: UploadedFile = None):
     room = get_object_or_404(Room, id=room_id)
-    for attr, value in payload.dict().items():
+    payload_data = payload.dict()
+
+    if file is not None:
+        payload_data['banner'] = file
+
+    for attr, value in payload_data.items():
         if value is not None:
             if attr == 'master':
                 member = room.members.filter(id=value)

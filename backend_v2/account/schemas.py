@@ -46,6 +46,17 @@ class MemberSchema(ModelSchema):
                         'image')
 
 
+class RoomMemberSchema(ModelSchema):
+    coupon: int = 0
+
+    class Config:
+        model = Member
+        model_fields = ('id',
+                        'name',
+                        'username',
+                        'image')
+
+
 class MemberPaginationSchema(PaginationSchema):
     items: List[MemberSchema]
 

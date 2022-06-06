@@ -2,7 +2,7 @@ from typing import List
 
 from ninja import Schema, ModelSchema
 
-from account.schemas import MemberSchema
+from account.schemas import MemberSchema, RoomMemberSchema
 from room.models import Room
 from utils.response import ResponseSchema, PostSuccess, SuccessStatus
 
@@ -29,8 +29,8 @@ class RoomDetailSchema(Schema):
     id: int
     name: str
     banner: str = None
-    members: List[MemberSchema]
-    master: MemberSchema
+    members: List[RoomMemberSchema]
+    master: RoomMemberSchema
 
 
 # In Schema
