@@ -18,3 +18,10 @@ class Member(AbstractUser):
     image = models.ImageField(upload_to=path_and_rename, blank=True, null=True)
     first_name = None
     last_name = None
+
+
+class CertificateCode(models.Model):
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    key = models.CharField(max_length=6)
+    expire = models.DateTimeField()
