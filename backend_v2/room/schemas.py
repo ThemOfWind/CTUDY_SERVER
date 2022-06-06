@@ -22,11 +22,13 @@ class RoomListSchema(Schema):
     banner: str = None
     member_count: int
     master_name: str
+    master_username: str
 
 
 class RoomDetailSchema(Schema):
     id: int
     name: str
+    banner: str = None
     members: List[MemberSchema]
     master: MemberSchema
 
