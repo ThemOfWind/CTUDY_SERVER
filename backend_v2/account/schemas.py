@@ -19,6 +19,22 @@ class SignupSchema(Schema):
     name: str
 
 
+class FindIdSchema(Schema):
+    email: str
+
+
+class FindPwSchema(Schema):
+    email: str
+    username: str
+
+
+class CertificateSchema(Schema):
+    email: str
+    username: str
+    code: str
+    key: str
+
+
 # Out Schema
 class UsernameCheck(Schema):
     username: str
@@ -57,6 +73,10 @@ class RoomMemberSchema(ModelSchema):
                         'image')
 
 
+class CertificateKeySchema(Schema):
+    key: str
+
+
 class MemberPaginationSchema(PaginationSchema):
     items: List[MemberSchema]
 
@@ -79,3 +99,7 @@ class SignupSuccessResponse(ResponseSchema):
 
 class MemberListResponse(ResponseSchema):
     response: MemberPaginationSchema
+
+
+class CertificateKeyResponse(ResponseSchema):
+    response: CertificateKeySchema

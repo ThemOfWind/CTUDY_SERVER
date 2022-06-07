@@ -239,3 +239,5 @@ LOGGING = {
 
 TOKEN_URL = 'http://127.0.0.1:8000/api/v2/o/token/'
 APP_NAME = 'ctudy'
+
+EMAIL_HOST_USER = 'ctudy.official'
