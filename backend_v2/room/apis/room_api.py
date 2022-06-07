@@ -86,16 +86,13 @@ def get_room(request, room_id: str):
     return result
 
 
-@router.post("/{room_id}", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@router.put("/{room_id}", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @base_api(logger)
 @auth_check
 @master_check
-def update_room(request, room_id: str, payload: RoomUpdateIn, file: UploadedFile = None):
+def update_room(request, room_id: str, payload: RoomUpdateIn):
     room = get_object_or_404(Room, id=room_id)
     payload_data = payload.dict()
-
-    if file is not None:
-        payload_data['banner'] = file
 
     for attr, value in payload_data.items():
         if value is not None:
@@ -111,6 +108,18 @@ def update_room(request, room_id: str, payload: RoomUpdateIn, file: UploadedFile
             else:
                 setattr(room, attr, value)
                 room.save()
+
+    return {'id': room.id}
+
+
+@router.post("/banner/{room_id}", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@base_api(logger)
+@auth_check
+@master_check
+def update_banner_room(request, room_id: str, file: UploadedFile = None):
+    room = get_object_or_404(Room, id=room_id)
+    room.banner = file
+    room.save()
 
     return {'id': room.id}
 
