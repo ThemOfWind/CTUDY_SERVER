@@ -35,6 +35,10 @@ class CertificateSchema(Schema):
     key: str
 
 
+class ProfileNameSchema(Schema):
+    name: str
+
+
 # Out Schema
 class UsernameCheck(Schema):
     username: str
