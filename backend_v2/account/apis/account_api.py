@@ -10,7 +10,8 @@ from oauth2_provider.models import Application, RefreshToken, AccessToken
 
 from account.models import Member, CertificateCode
 from account.schemas import LoginSchema, SignupSchema, TokenResponse, ProfileResponse, \
-    UsernameCheckResponse, SignupSuccessResponse, FindIdSchema, FindPwSchema, CertificateSchema, CertificateKeyResponse
+    UsernameCheckResponse, SignupSuccessResponse, FindIdSchema, FindPwSchema, CertificateSchema, CertificateKeyResponse, \
+    ProfileNameSchema
 from settings.auth import AuthBearer, auth_check
 from utils.base import base_api
 from utils.gmail import gmail_authenticate, create_message, send_message
@@ -118,10 +119,22 @@ def profile(request):
         return 500, server_error_return
 
 
+@router.put("/profile/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@base_api(logger)
+@auth_check
+def update_profile(request, payload: ProfileNameSchema):
+    for attr, value in payload.dict().items():
+        if value is not None:
+            setattr(request.user, attr, value)
+            request.user.save()
+
+    return {'success': True}
+
+
 @router.post("/profile/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @base_api(logger)
 @auth_check
-def update_profile(request, file: UploadedFile = None):
+def update_profile_image(request, file: UploadedFile = None):
     request.user.image = file
     request.user.save()
 
