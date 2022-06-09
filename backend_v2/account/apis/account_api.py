@@ -118,6 +118,16 @@ def profile(request):
         return 500, server_error_return
 
 
+@router.post("/profile/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@base_api(logger)
+@auth_check
+def update_profile(request, file: UploadedFile = None):
+    request.user.image = file
+    request.user.save()
+
+    return {'success': True}
+
+
 @router.post("/findid/", response={200: UsernameCheckResponse, error_codes: ErrorResponseSchema})
 @base_api(logger)
 def find_id(request, payload: FindIdSchema):
