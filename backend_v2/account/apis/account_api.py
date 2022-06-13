@@ -10,14 +10,14 @@ from oauth2_provider.models import Application, RefreshToken, AccessToken
 
 from account.models import Member, CertificateCode
 from account.schemas import LoginSchema, SignupSchema, TokenResponse, ProfileResponse, \
-    UsernameCheckResponse, SignupSuccessResponse, FindIdSchema, FindPwSchema, CertificateSchema, CertificateKeyResponse, \
-    ProfileNameSchema
+    SignupSuccessResponse, FindIdSchema, FindPwSchema, CertificateSchema, CertificateKeyResponse, \
+    ProfileNameSchema, PasswordChangeSchema, UsernameCheckResponse
 from settings.auth import AuthBearer, auth_check
 from utils.base import base_api
 from utils.gmail import gmail_authenticate, create_message, send_message
 from utils.response import ErrorResponseSchema, SuccessResponse
 from utils.error import server_error_return, auth_error_return, error_codes, exist_error_return, CtudyException, \
-    not_found_error_return
+    not_found_error_return, param_error_return
 
 router = Router(tags=['Account'])
 logger = logging.getLogger('account')
@@ -61,13 +61,21 @@ def login(request, payload: LoginSchema):
     return response.json()
 
 
-@router.get("/signup/", response={200: UsernameCheckResponse, error_codes: ErrorResponseSchema})
+@router.get("/signup/", response={200: SuccessResponse, error_codes: ErrorResponseSchema})
 @base_api(logger)
-def username_check(request, username: str):
-    if Member.objects.filter(username=username).exists():
-        raise CtudyException(code=400, message=exist_error_return)
+def username_email_check(request, username: str = None, email: str = None):
+    if username is None and email is None:
+        raise CtudyException(code=400, message=param_error_return)
 
-    return {'username': username}
+    if username is not None:
+        if Member.objects.filter(username=username).exists():
+            raise CtudyException(code=400, message=exist_error_return)
+
+    if email is not None:
+        if Member.objects.filter(email=email).exists():
+            raise CtudyException(code=400, message=exist_error_return)
+
+    return {'success': True}
 
 
 @router.post("/signup/", response={200: SignupSuccessResponse, error_codes: ErrorResponseSchema})
@@ -136,6 +144,20 @@ def update_profile(request, payload: ProfileNameSchema):
 @auth_check
 def update_profile_image(request, file: UploadedFile = None):
     request.user.image = file
+    request.user.save()
+
+    return {'success': True}
+
+
+@router.put("/password/", response={200: SuccessResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())
+@base_api(logger)
+@auth_check
+def update_password(request, payload: PasswordChangeSchema):
+    payload_data = payload.dict()
+    if not request.user.check_password(payload_data['password']):
+        raise CtudyException(401, auth_error_return)
+
+    request.user.set_password(payload_data['new_password'])
     request.user.save()
 
     return {'success': True}

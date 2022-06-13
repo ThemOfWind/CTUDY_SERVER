@@ -39,6 +39,11 @@ class ProfileNameSchema(Schema):
     name: str
 
 
+class PasswordChangeSchema(Schema):
+    password: str
+    new_password: str
+
+
 # Out Schema
 class UsernameCheck(Schema):
     username: str
