@@ -188,8 +188,7 @@ def find_pw(request, payload: FindPwSchema):
     CertificateCode.objects.create(member=member, code=certificate_code, key=certificate_key, expire=expire)
 
     # 메일 발송
-    # send_message(to=payload_data['email'], subject='[Ctudy] 비밀번호 재설정 인증', code=certificate_code)
-    send_message(to='pb1123love@gmail.com', subject='[Ctudy] 비밀번호 재설정 인증', code=certificate_code)
+    send_message(to=payload_data['email'], subject='[Ctudy] 비밀번호 재설정 인증', code=certificate_code)
 
     return {'success': True}
 

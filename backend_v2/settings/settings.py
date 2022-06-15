@@ -241,8 +241,11 @@ TOKEN_URL = 'http://127.0.0.1:8000/api/v2/o/token/'
 APP_NAME = 'ctudy'
 
 if ENV == 'DEV':
-    EMAIL_HOST_USER = 'test'
-    EMAIL_HOST_PASSWORD = 'test'
+    with open('./settings/secret.json', 'r', encoding='utf-8') as f:
+        secret = json.load(f)
+
+    EMAIL_HOST_USER = secret['EMAIL']['USER']
+    EMAIL_HOST_PASSWORD = secret['EMAIL']['PASSWORD']
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 elif ENV == 'BARE_METAL':
