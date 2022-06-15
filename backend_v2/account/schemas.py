@@ -32,7 +32,13 @@ class CertificateSchema(Schema):
     email: str
     username: str
     code: str
+
+
+class ResetPwSchema(Schema):
+    email: str
+    username: str
     key: str
+    new_password: str
 
 
 class ProfileNameSchema(Schema):

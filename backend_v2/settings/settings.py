@@ -240,4 +240,24 @@ LOGGING = {
 TOKEN_URL = 'http://127.0.0.1:8000/api/v2/o/token/'
 APP_NAME = 'ctudy'
 
-EMAIL_HOST_USER = 'ctudy.official'
+if ENV == 'DEV':
+    EMAIL_HOST_USER = 'test'
+    EMAIL_HOST_PASSWORD = 'test'
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+elif ENV == 'BARE_METAL':
+    with open('./settings/secret.json', 'r', encoding='utf-8') as f:
+        secret = json.load(f)
+
+    EMAIL_HOST_USER = secret['EMAIL']['USER']
+    EMAIL_HOST_PASSWORD = secret['EMAIL']['PASSWORD']
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+elif ENV == 'K8S':
+    EMAIL_HOST_USER = os.environ['EMAIL_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_PASSWORD']
+    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

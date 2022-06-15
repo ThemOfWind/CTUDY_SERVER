@@ -25,7 +25,7 @@ logger = logging.getLogger('member')
 @paginate(PageNumberPaginationExtra)
 def list_member(request):
     try:
-        return 200, Member.objects.all()
+        return 200, Member.objects.exclude(id=request.user.id)
     except Exception as e:
         logger.error(e.__str__())
         raise CtudyException(500, server_error_return)

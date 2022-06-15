@@ -6,3 +6,4 @@ backend/.idea
 backend_v2/db.sqlite3
 *.log
 backend_v2/media/public
+backend_v2/settings/secret.json
