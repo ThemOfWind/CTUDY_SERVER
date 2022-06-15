@@ -24,4 +24,5 @@ class CertificateCode(models.Model):
     member = models.ForeignKey(Member, on_delete=models.CASCADE)
     code = models.CharField(max_length=6)
     key = models.CharField(max_length=6)
+    is_checked = models.BooleanField(default=False)
     expire = models.DateTimeField()

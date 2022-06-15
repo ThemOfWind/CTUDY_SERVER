@@ -47,7 +47,7 @@ def list_coupon(request, room_id: int, mode: str = 'a'):
 def create_coupon(request, payload: CouponCreateIn, file: UploadedFile = None):
     payload_data = payload.dict()
     if file is not None:
-        payload_data['banner'] = file
+        payload_data['image'] = file
     payload_data['sender'] = request.user
 
     Coupon.objects.create(**payload_data)

@@ -10,11 +10,11 @@ from oauth2_provider.models import Application, RefreshToken, AccessToken
 
 from account.models import Member, CertificateCode
 from account.schemas import LoginSchema, SignupSchema, TokenResponse, ProfileResponse, \
-    SignupSuccessResponse, FindIdSchema, FindPwSchema, CertificateSchema, CertificateKeyResponse, \
-    ProfileNameSchema, PasswordChangeSchema, UsernameCheckResponse
+    SignupSuccessResponse, FindIdSchema, FindPwSchema, CertificateSchema, ProfileNameSchema, \
+    PasswordChangeSchema, UsernameCheckResponse, CertificateKeyResponse, ResetPwSchema
 from settings.auth import AuthBearer, auth_check
 from utils.base import base_api
-from utils.gmail import gmail_authenticate, create_message, send_message
+from utils.gmail import send_message
 from utils.response import ErrorResponseSchema, SuccessResponse
 from utils.error import server_error_return, auth_error_return, error_codes, exist_error_return, CtudyException, \
     not_found_error_return, param_error_return
@@ -173,7 +173,7 @@ def find_id(request, payload: FindIdSchema):
     return {'username': member.username}
 
 
-@router.post("/findpw/", response={200: CertificateKeyResponse, error_codes: ErrorResponseSchema})
+@router.post("/findpw/", response={200: SuccessResponse, error_codes: ErrorResponseSchema})
 @base_api(logger)
 def find_pw(request, payload: FindPwSchema):
     payload_data = payload.dict()
@@ -184,30 +184,51 @@ def find_pw(request, payload: FindPwSchema):
     certificate = uuid4().hex.upper()
     certificate_code = certificate[:6]
     certificate_key = certificate[6:12]
-    expire = datetime.datetime.now() + datetime.timedelta(minutes=5)
+    expire = datetime.datetime.now() + datetime.timedelta(minutes=3)
     CertificateCode.objects.create(member=member, code=certificate_code, key=certificate_key, expire=expire)
 
     # 메일 발송
-    service = gmail_authenticate()
-    message = create_message(settings.EMAIL_HOST_USER, member.email,
-                             "Ctudy, 비밀번호 초기화 인증 메일",
-                             f"Certificate Code: {certificate_code}")
-    send_message(service, "me", message)
+    # send_message(to=payload_data['email'], subject='[Ctudy] 비밀번호 재설정 인증', code=certificate_code)
+    send_message(to='pb1123love@gmail.com', subject='[Ctudy] 비밀번호 재설정 인증', code=certificate_code)
 
-    return {'key': certificate_key}
+    return {'success': True}
 
 
-@router.post("/findpw/certificate", response={200: SuccessResponse, error_codes: ErrorResponseSchema})
+@router.post("/findpw/certificate/", response={200: CertificateKeyResponse, error_codes: ErrorResponseSchema})
 @base_api(logger)
 def check_certificate_code(request, payload: CertificateSchema):
     payload_data = payload.dict()
     now = datetime.datetime.now()
 
-    if not CertificateCode.objects.filter(member__username=payload_data['username'],
-                                          member__email=payload_data['email'],
-                                          code=payload_data['code'],
-                                          key=payload_data['key'],
-                                          expire__gt=now).exists():
+    certificate = CertificateCode.objects.filter(member__username=payload_data['username'],
+                                                 member__email=payload_data['email'],
+                                                 code=payload_data['code'],
+                                                 expire__gt=now)
+
+    if not certificate.exists():
         raise CtudyException(code=404, message=not_found_error_return)
+
+    certificate = certificate.first()
+    certificate.is_checked = True
+    certificate.save()
+
+    return {'key': certificate.key}
+
+
+@router.post("/findpw/reset/", response={200: SuccessResponse, error_codes: ErrorResponseSchema})
+@base_api(logger)
+def reset_pw(request, payload: ResetPwSchema):
+    payload_data = payload.dict()
+
+    certificate = CertificateCode.objects.filter(member__username=payload_data['username'],
+                                                 member__email=payload_data['email'],
+                                                 key=payload_data['key'],
+                                                 is_checked=True)
+    if not certificate.exists():
+        raise CtudyException(code=404, message=not_found_error_return)
+
+    member = certificate.first().member
+    member.set_password(payload_data['new_password'])
+    member.save()
 
     return {'success': True}

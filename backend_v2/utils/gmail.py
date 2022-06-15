@@ -1,43 +1,14 @@
-import os.path
-import base64
-
-from googleapiclient.discovery import build
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from googleapiclient import errors
-from email.message import EmailMessage
+from django.core.mail import EmailMultiAlternatives
+from django.template import Context
+from django.template.loader import render_to_string, get_template
+from django.utils.html import strip_tags
+from django.conf import settings
 
 
-def gmail_authenticate():
-    scopes = ['https://mail.google.com/']
-    creds = None
-    if os.path.exists('settings/token.json'):
-        creds = Credentials.from_authorized_user_file('settings/token.json', scopes)
-    if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file('settings/credentials.json', scopes)
-            creds = flow.run_local_server(port=0)
-        with open('../settings/token.json', 'w') as token:
-            token.write(creds.to_json())
-    return build('gmail', 'v1', credentials=creds)
+def send_message(to, subject, code):
+    html_content = render_to_string('account/email/password_reset_key_message.html', {'certificate_code': code})
+    text_content = strip_tags(html_content)
 
-
-def create_message(sender, to, subject, message_text):
-    message = EmailMessage()
-    message["From"] = sender
-    message["To"] = to.split(",")
-    message["Subject"] = subject
-    message.set_content(message_text)
-    return {'raw': base64.urlsafe_b64encode(message.as_bytes()).decode('utf8')}
-
-
-def send_message(service, user_id, message):
-    try:
-        message = service.users().messages().send(userId=user_id, body=message).execute()
-        print('Message Id: %s' % message['id'])
-        return message
-    except errors.HttpError as error:
-        print('An error occurred: %s' % error)
+    msg = EmailMultiAlternatives(subject, text_content, settings.EMAIL_HOST_USER, [to])
+    msg.attach_alternative(html_content, "text/html")
+    msg.send()
