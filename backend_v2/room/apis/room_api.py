@@ -11,7 +11,7 @@ from room.models import Room, RoomConfig
 from room.schemas import RoomSchema, RoomCreateIn, RoomUpdateIn, RoomIdResponse, RoomListResponse, RoomDetailResponse
 from settings.auth import AuthBearer, auth_check, master_check
 from utils.base import base_api
-from utils.error import error_codes
+from utils.error import error_codes, CtudyException, param_error_return
 from utils.response import ErrorResponseSchema, SuccessResponse
 
 router = Router(tags=['Study - Room'])
@@ -84,6 +84,21 @@ def get_room(request, room_id: str):
     }
 
     return result
+
+
+@router.delete("/{room_id}/member/{member_id}",
+               response={200: SuccessResponse, error_codes: ErrorResponseSchema},
+               auth=AuthBearer())
+@base_api(logger)
+@auth_check
+def out_room(request, room_id: int, member_id: int):
+    room = get_object_or_404(Room, id=room_id, is_deleted=False)
+    if request.user.id != member_id or room.roomconfig.master == request.user:
+        raise CtudyException(400, param_error_return)
+
+    room.members.remove(request.user)
+
+    return {'success': True}
 
 
 @router.put("/{room_id}", response={200: RoomIdResponse, error_codes: ErrorResponseSchema}, auth=AuthBearer())

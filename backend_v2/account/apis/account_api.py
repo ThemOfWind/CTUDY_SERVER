@@ -185,6 +185,7 @@ def find_pw(request, payload: FindPwSchema):
     certificate_code = certificate[:6]
     certificate_key = certificate[6:12]
     expire = datetime.datetime.now() + datetime.timedelta(minutes=3)
+    CertificateCode.objects.filter(member=member).update(is_checked=True)
     CertificateCode.objects.create(member=member, code=certificate_code, key=certificate_key, expire=expire)
 
     # 메일 발송
@@ -202,6 +203,7 @@ def check_certificate_code(request, payload: CertificateSchema):
     certificate = CertificateCode.objects.filter(member__username=payload_data['username'],
                                                  member__email=payload_data['email'],
                                                  code=payload_data['code'],
+                                                 is_checked=False,
                                                  expire__gt=now)
 
     if not certificate.exists():
