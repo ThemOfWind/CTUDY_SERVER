@@ -8,6 +8,7 @@ from ninja.pagination import paginate
 
 from account.models import Member
 from account.schemas import MemberSchema
+from coupon.models import Coupon
 from room.models import Room
 from room.schemas import MemberIn
 from settings.auth import AuthBearer, auth_check, master_check
@@ -65,6 +66,11 @@ def delete_member(request, room_id: str, payload: MemberIn):
         raise CtudyException(401, not_found_error_return)
 
     member_list = Member.objects.filter(q)
+
+    coupon_q = Q()
+    [coupon_q.add(Q(receiver=member), Q.OR) for member in member_list]
+    Coupon.objects.filter(coupon_q, room=room).delete()
+
     room.members.remove(*member_list)
     room.save()
 
