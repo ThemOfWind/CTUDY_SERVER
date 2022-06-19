@@ -11,7 +11,7 @@ from room.models import Room, RoomConfig
 from room.schemas import RoomSchema, RoomCreateIn, RoomUpdateIn, RoomIdResponse, RoomListResponse, RoomDetailResponse
 from settings.auth import AuthBearer, auth_check, master_check
 from utils.base import base_api
-from utils.error import error_codes, CtudyException, param_error_return
+from utils.error import error_codes, CtudyException, param_error_return, not_found_error_return
 from utils.response import ErrorResponseSchema, SuccessResponse
 
 router = Router(tags=['Study - Room'])
@@ -68,6 +68,8 @@ def create_room(request, payload: RoomCreateIn, file: UploadedFile = None):
 @auth_check
 def get_room(request, room_id: str):
     room = get_object_or_404(Room, id=room_id, is_deleted=False)
+    if not room.members.filter(id=request.user.id).exists() and room.roomconfig.master != request.user:
+        raise CtudyException(404, not_found_error_return)
     members = list()
 
     for member in room.members.all():
@@ -96,6 +98,7 @@ def out_room(request, room_id: int, member_id: int):
     if request.user.id != member_id or room.roomconfig.master == request.user:
         raise CtudyException(400, param_error_return)
 
+    Coupon.objects.filter(receiver=request.user, room=room).delete()
     room.members.remove(request.user)
 
     return {'success': True}
