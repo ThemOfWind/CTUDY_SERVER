@@ -77,7 +77,7 @@ def get_room(request, room_id: str):
         member.coupon = Coupon.objects.filter(receiver=request.user,
                                               start_date__lte=now,
                                               end_date__gte=now,
-                                              room_id=room_id, 
+                                              room_id=room_id,
                                               is_use=False).count()
         members.append(member)
 
