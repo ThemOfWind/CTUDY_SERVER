@@ -72,8 +72,13 @@ def get_room(request, room_id: str):
         raise CtudyException(404, not_found_error_return)
     members = list()
 
+    now = datetime.datetime.now().date()
     for member in room.members.all():
-        member.coupon = Coupon.objects.filter(room=room, receiver=member).count()
+        member.coupon = Coupon.objects.filter(receiver=request.user,
+                                              start_date__lte=now,
+                                              end_date__gte=now,
+                                              room_id=room_id,
+                                              is_use=False).count()
         members.append(member)
 
     master = room.roomconfig.master
