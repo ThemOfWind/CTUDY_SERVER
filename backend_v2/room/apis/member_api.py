@@ -24,9 +24,24 @@ logger = logging.getLogger('member')
 @router.get("/", response={200: List[MemberSchema], error_codes: ErrorResponseSchema}, auth=AuthBearer())
 @auth_check
 @paginate(PageNumberPaginationExtra)
-def list_member(request):
+def list_member(request, search: str, room_id: str = None):
     try:
-        return 200, Member.objects.exclude(id=request.user.id)
+        q = Q()
+        q.add(Q(name__icontains=search), Q.OR)
+        q.add(Q(username__icontains=search), Q.OR)
+
+        exclude_q = Q()
+        exclude_q.add(~Q(id=request.user.id), Q.AND)
+
+        if room_id is not None:
+            room = get_object_or_404(Room, id=room_id)
+            room_q = Q()
+            [room_q.add(~Q(id=member.id), Q.OR) for member in room.members.all()]
+
+            return 200, Member.objects.filter(q, room_q, exclude_q)
+        else:
+            return 200, Member.objects.filter(q, exclude_q)
+
     except Exception as e:
         logger.error(e.__str__())
         raise CtudyException(500, server_error_return)
