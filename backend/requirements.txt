@@ -8,7 +8,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 cryptography==36.0.0
 Deprecated==1.2.13
-Django==4.0
+Django==4.0.7
 django-cors-headers==3.10.1
 django-ninja==0.17.0
 django-oauth-toolkit==1.5.0
@@ -21,10 +21,10 @@ idna==3.3
 inflection==0.5.1
 itypes==1.2.0
 Jinja2==3.0.3
-jwcrypto==1.0
+jwcrypto==1.4
 MarkupSafe==2.0.1
 mysqlclient==2.1.0
-oauthlib==3.1.1
+oauthlib==3.2.1
 packaging==21.3
 pycparser==2.21
 pydantic==1.9.0
